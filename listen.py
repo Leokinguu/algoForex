@@ -126,10 +126,11 @@ async def my_event_handler(event):
         coin = splited[1].strip("#")
         price1 = splited[5]
         price2 =splited [7]
-        target = splited[10].strip('$')
+        tp1 = splited[10].strip('$')
+        tp2 = splited[12].strip('$')
         sl = splited[18].strip('$')
-        print(target, sl)
-        await place_orders_crypto(coin, 'BUY', price1, price2, target, sl)
+        print(tp1, sl)
+        await place_orders_crypto(coin, price1, price2, tp1, tp2, sl)
     if check_statement2(statement):
         print('new from MMFX')
         symbol = capture_symbol(statement)
@@ -149,10 +150,11 @@ async def my_event_handler(event):
         coin = splited[1].strip("#")
         price1 = splited[5]
         price2 =splited [7]
-        target = splited[10].strip('$')
+        tp1 = splited[10].strip('$')
+        tp2 = splited[12].strip('$')
         sl = splited[18].strip('$')
-        print(target, sl)
-        await place_orders_crypto(coin, 'BUY', price1, price2, target, sl)
+        print(tp1, sl)
+        await place_orders_crypto(coin, price1, price2, tp1, tp2, sl)
 
 client.start()
 client.run_until_disconnected()
