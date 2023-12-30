@@ -1,6 +1,7 @@
 from config import *
 import requests
-from mongodb import add_trade
+from forex_service import *
+import datetime
 
 endpoint = f'https://mt-client-api-v1.singapore-b.agiliumtrade.ai/users/current/accounts/{octa_account_id}/'
 
@@ -61,8 +62,20 @@ async def place_order(symbol, direction, price, target, sl):
 
         if trade_result:
             print('Trade Successful', trade_result)
+            trade ={}
+            current_datetime = datetime.datetime.now()
+
+            trade['trade'] = trade_result
+            trade['date'] = current_datetime
+            forex_trade_details(trade)
         else:
             print('Trade Error', trade_result)
+            trade ={}
+            current_datetime = datetime.datetime.now()
+
+            trade['trade'] = trade_result
+            trade['date'] = current_datetime
+            forex_trade_details(trade)
         #add_trade(trade_result)
 
     except Exception as e:

@@ -4,6 +4,8 @@ import hmac
 import hashlib
 import time
 import logging
+from forex_service import *
+import datetime
 
 endpoint = 'https://fapi.binance.com/fapi/v1/'
 logging.basicConfig(level=logging.INFO)
@@ -155,6 +157,11 @@ async def place_orders_crypto(symbol, price1, price2, tp1, tp2, sl):
                             }
                         }
                         logging.info(f'Trade deatils: {str(log_data)}')
+                        trade={}
+                        current_datetime = datetime.datetime.now()
+                        trade['trade'] = log_data
+                        trade['date'] = current_datetime
+                        crypto_trade_details(trade)
         else:
             logging.info(f"Price not available or not within the desired range for {symbol}")
     except Exception as e:
