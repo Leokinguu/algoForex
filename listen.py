@@ -48,6 +48,15 @@ async def my_event_handler(event):
         target = data['take_profit_1']
         print(symbol, target)
         await place_order(symbol, direction, price, target, sl)
+    elif check_statement_gold(statement):
+        print('Signal from XAUUSD')
+        data = capture_trade_xauusd(statement)
+        symbol = 'XAUUSD'
+        price = data['price']
+        sl = data['stop_loss']
+        direction = data['direction']
+        target = data['take_profit_1']
+        await place_order(symbol, direction, price, target, sl)
 
 @client.on(events.NewMessage(chats=-1001459607851))
 async def my_event_handler(event):
@@ -63,6 +72,20 @@ async def my_event_handler(event):
         sl = data['stop_loss']
         print(tp1, sl)
         await place_orders_crypto(coin, price1, price2, tp1, tp2, sl)
+
+@client.on(events.NewMessage(chats=-1001464335892))
+async def my_event_handler(event):
+    statement = event.raw_text
+    if check_statement_gold(statement):
+        print('Signal from XAUUSD')
+        data = capture_trade_xauusd(statement)
+        symbol = 'XAUUSD'
+        price = data['price']
+        sl = data['stop_loss']
+        direction = data['direction']
+        target = data['take_profit_1']
+        await place_order(symbol, direction, price, target, sl)
+
 
 client.start()
 client.run_until_disconnected()
