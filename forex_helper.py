@@ -39,16 +39,25 @@ def capture_trade_info(statement):
     # Capture Stop Loss
     sl_regex = r"\b(?:SL:|stop loss:)\s(\d+\.\d+|\d+)"
     sl_match = re.findall(sl_regex, statement, re.IGNORECASE)
+    if not tp1_match:
+        sl_regex = r"\b(?:SL:|stop loss:)(\d+\.\d+|\d+)"
+        sl_match = re.findall(tp1_regex, statement, re.IGNORECASE)
     trade_info['stop_loss'] = float(sl_match[0]) if sl_match else None
 
     # Capture Take Profit 1
     tp1_regex = r"\b(?:TP1:)\s(\d+\.\d+|\d+)"
     tp1_match = re.findall(tp1_regex, statement, re.IGNORECASE)
+    if not tp1_match:
+        tp1_regex = r"\b(?:TP1:)(\d+\.\d+|\d+)"
+        tp1_match = re.findall(tp1_regex, statement, re.IGNORECASE)
     trade_info['take_profit_1'] = float(tp1_match[0]) if tp1_match else None
 
     # Capture Take Profit 2
     tp2_regex = r"\b(?:TP2:)\s(\d+\.\d+|\d+)"
     tp2_match = re.findall(tp2_regex, statement, re.IGNORECASE)
+    if not tp1_match:
+        tp2_regex = r"\b(?:TP2:)(\d+\.\d+|\d+)"
+        tp2_match = re.findall(tp1_regex, statement, re.IGNORECASE)
     trade_info['take_profit_2'] = float(tp2_match[0]) if tp2_match else None
 
     # Capture Direction
