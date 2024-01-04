@@ -5,6 +5,22 @@ import datetime
 
 endpoint = f'https://mt-client-api-v1.singapore-b.agiliumtrade.ai/users/current/accounts/{octa_account_id}/'
 
+def ticker_price(url, headers):
+    price_response = requests.get(url, headers=headers)
+    return price_response.json()
+
+def get_trade_type(direction, price, price_data):
+    if direction == 'buy' or direction == 'buu':
+        if price < price_data['ask']:
+            return 'ORDER_TYPE_BUY_LIMIT'
+        elif price > price_data['ask']:
+            return 'ORDER_TYPE_BUY_STOP'
+    elif direction == 'sell':
+        if price < price_data['bid']:
+            return 'ORDER_TYPE_SELL_STOP'
+        elif price > price_data['bid']:
+            return 'ORDER_TYPE_SELL_LIMIT'
+
 async def place_order(symbol, direction, price, target, sl):
     try:
         # Convert inputs to appropriate types
@@ -25,8 +41,7 @@ async def place_order(symbol, direction, price, target, sl):
         }
         
         # Fetch current price data
-        price_response = requests.get(get_price_url, headers=headers)
-        price_data = price_response.json()
+        price_data = ticker_price(get_price_url, headers)
         print('mt pice', price_data)
 
         # Prepare trade parameters
@@ -40,16 +55,7 @@ async def place_order(symbol, direction, price, target, sl):
         }
         
         # Determine action type based on direction and price
-        if direction == 'buy' or direction == 'buu':
-            if price < price_data['ask']:
-                trade_body["actionType"] = 'ORDER_TYPE_BUY_LIMIT'
-            elif price > price_data['ask']:
-                trade_body["actionType"] = 'ORDER_TYPE_BUY_STOP'
-        elif direction == 'sell':
-            if price < price_data['bid']:
-                trade_body["actionType"] = 'ORDER_TYPE_SELL_STOP'
-            elif price > price_data['bid']:
-                trade_body["actionType"] = 'ORDER_TYPE_SELL_LIMIT'
+        trade_body["actionType"] = get_trade_type(direction, price, price_data)
         
         # Place trade order
         print('tarde',trade_body["actionType"])
@@ -57,6 +63,8 @@ async def place_order(symbol, direction, price, target, sl):
         trade_result = trade_response.json()
 
         while trade_result.get('message') == 'Invalid stops':
+           price_data = ticker_price(get_price_url, headers)
+           trade_body["actionType"] = get_trade_type(direction, price, price_data)
            trade_response = requests.post(take_trade_url, headers=headers, json=trade_body)
            trade_result = trade_response.json()
 
