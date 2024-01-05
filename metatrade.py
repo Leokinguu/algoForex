@@ -61,6 +61,7 @@ async def place_order(symbol, direction, price, target, sl):
         print('tarde',trade_body["actionType"])
         trade_response = requests.post(take_trade_url, headers=headers, json=trade_body)
         trade_result = trade_response.json()
+        print("1", trade_result)
 
         while trade_result.get('message') == 'Invalid stops':
            price_data = ticker_price(get_price_url, headers)
