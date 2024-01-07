@@ -21,8 +21,10 @@ def get_trade_type(direction, price, price_data):
         elif price > price_data['bid']:
             return 'ORDER_TYPE_SELL_LIMIT'
 
-async def place_order(symbol, direction, price, target, sl):
+async def place_order(symbol, direction, price, target, sl, tp2, tp3, is_gold):
     try:
+        times = 3 if is_gold else 1
+
         # Convert inputs to appropriate types
         direction = direction.lower()
         price = float(price)
@@ -58,33 +60,41 @@ async def place_order(symbol, direction, price, target, sl):
         trade_body["actionType"] = get_trade_type(direction, price, price_data)
         
         # Place trade order
-        print('tarde',trade_body["actionType"])
-        trade_response = requests.post(take_trade_url, headers=headers, json=trade_body)
-        trade_result = trade_response.json()
-        print("1", trade_result)
+        for i in range(times):
 
-        while trade_result.get('message') == 'Invalid stops':
-           price_data = ticker_price(get_price_url, headers)
-           trade_body["actionType"] = get_trade_type(direction, price, price_data)
-           trade_response = requests.post(take_trade_url, headers=headers, json=trade_body)
-           trade_result = trade_response.json()
+            if i == 1:
+                trade_body['takeProfit'] = tp2
+                trade_body['trailingStopLoss'] = {"distance": { "distance": 20, "units": "RELATIVE_PIPS" }}
+            if i == 2:
+                trade_body['takeProfit'] = tp3
+                trade_body['trailingStopLoss'] = {"distance": { "distance": 20, "units": "RELATIVE_PIPS" }}
 
-        if trade_result:
-            print('Trade Successful', trade_result)
-            trade ={}
-            current_datetime = datetime.datetime.now()
+            trade_response = requests.post(take_trade_url, headers=headers, json=trade_body)
+            trade_result = trade_response.json()
+            print(i, trade_result)
 
-            trade['trade'] = trade_result
-            trade['date'] = current_datetime
-            forex_trade_details(trade)
-        else:
-            print('Trade Error', trade_result)
-            trade ={}
-            current_datetime = datetime.datetime.now()
+            while trade_result.get('message') == 'Invalid stops':
+                price_data = ticker_price(get_price_url, headers)
+                trade_body["actionType"] = get_trade_type(direction, price, price_data)
+                trade_response = requests.post(take_trade_url, headers=headers, json=trade_body)
+                trade_result = trade_response.json()
 
-            trade['trade'] = trade_result
-            trade['date'] = current_datetime
-            forex_trade_details(trade)
+            if trade_result['message'] == 'No error returned' :
+                print('Trade Successful', trade_result)
+                trade ={}
+                current_datetime = datetime.datetime.now()
+
+                trade['trade'] = trade_result
+                trade['date'] = current_datetime
+                forex_trade_details(trade)
+            else:
+                print('Trade Error', trade_result)
+                trade ={}
+                current_datetime = datetime.datetime.now()
+
+                trade['trade'] = trade_result
+                trade['date'] = current_datetime
+                forex_trade_details(trade)
         #add_trade(trade_result)
 
     except Exception as e:

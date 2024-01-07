@@ -22,7 +22,7 @@ async def my_event_handler(event):
         direction = data['direction']
         target = data['take_profit_1']
         print(symbol, target)
-        await place_order(symbol, direction, price, target, sl)
+        await place_order(symbol, direction, price, target, sl, None,None, False)
 
 @client.on(events.NewMessage(chats=-4026560717))
 async def my_event_handler(event):
@@ -47,7 +47,7 @@ async def my_event_handler(event):
         direction = data['direction']
         target = data['take_profit_1']
         print(symbol, target)
-        await place_order(symbol, direction, price, target, sl)
+        await place_order(symbol, direction, price, target, sl, None,None, False)
     elif check_statement_gold(statement):
         print('Signal from XAUUSD')
         data = capture_trade_xauusd(statement)
@@ -55,8 +55,10 @@ async def my_event_handler(event):
         price = data['price']
         sl = data['stop_loss']
         direction = data['direction']
-        target = data['take_profit_1']
-        await place_order(symbol, direction, price, target, sl)
+        tp1 = data['take_profit_1']
+        tp2 = data['take_profit_2']
+        tp3 = data['take_profit_3']
+        await place_order(symbol, direction, price, tp1, sl, tp2, tp3, True)
 
 @client.on(events.NewMessage(chats=-1001459607851))
 async def my_event_handler(event):
@@ -83,8 +85,10 @@ async def my_event_handler(event):
         price = data['price']
         sl = data['stop_loss']
         direction = data['direction']
-        target = data['take_profit_1']
-        await place_order(symbol, direction, price, target, sl)
+        tp1 = data['take_profit_1']
+        tp2 = data['take_profit_2']
+        tp3 = data['take_profit_3']
+        await place_order(symbol, direction, price, tp1, sl, tp2, tp3, True)
 
 
 client.start()

@@ -102,6 +102,11 @@ def capture_trade_xauusd(statement):
     tp2_match = re.findall(tp2_regex, statement, re.IGNORECASE)
     trade_info['take_profit_2'] = float(tp2_match[0]) if tp2_match else None
 
+    # Capture Take Profit 3
+    tp3_regex = r"\b(?:TP3:)\s+(\d+\.\d+|\d+)"
+    tp3_match = re.findall(tp3_regex, statement, re.IGNORECASE)
+    trade_info['take_profit_3'] = float(tp3_match[0]) if tp3_match else None
+
     # Capture Direction
     direction_regex = r"SELL|BUY"
     direction_match = re.findall(direction_regex, statement, re.IGNORECASE)
